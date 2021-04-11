@@ -3,6 +3,7 @@ const { ErrorResponse } = require("../models/ErrorResponse");
 const Account = require("../database/models/Account");
 const AsyncMiddleware = require("../middlewares/AsyncMiddleware");
 const bcrypt = require("bcrypt");
+const hassPassword = require("../middlewares/HassPassword");
 
 exports.getCurrentAccountInfo = AsyncMiddleware(async (req, res, next) => {
   const dataResult = await Account.findByPk(req.user._email);
@@ -16,20 +17,29 @@ exports.getCurrentAccountInfo = AsyncMiddleware(async (req, res, next) => {
 });
 
 exports.udpateCurrentAccountInfo = AsyncMiddleware(async (req, res, next) => {
-  const dataResult = await Account.update(req.body, {
-    where: { email: req.user._email },
-  });
+  const dataBeforeUpdate = await Account.findByPk(req.user._email);
+  if (req.body.password)
+    dataBeforeUpdate.password = await hassPassword(req.body.password);
+  if (req.body.username) dataBeforeUpdate.username = req.body.username;
+  const dataResult = await Account.update(
+    {
+      username: dataBeforeUpdate.username,
+      password: dataBeforeUpdate.password,
+    },
+    {
+      where: { email: dataBeforeUpdate.email },
+    }
+  );
   if (dataResult == 1) {
     return res
       .status(200)
       .json(new SuccessResponse(200, { message: "Update info successful !!" }));
   } else {
-    return res
-      .status(400)
-      .json(
-        new ErrorResponse(400, {
-          message: "Update false, something was wrong !!",
-        })
-      );
+    return res.status(400).json(
+      new ErrorResponse(400, {
+        message: "Update false, something was wrong !!",
+        result: dataBeforeUpdate,
+      })
+    );
   }
 });
