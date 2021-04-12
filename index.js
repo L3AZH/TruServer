@@ -34,7 +34,7 @@ app.use("/api/account/wallet", WalletRouter);
 // async function getlist() {
 //   try {
 //     console.log(
-//       await Account.findByPk("lamhatuananh6@gmail.com", {
+//       await Account.findByPk("lamhatuananh1@gmail.com", {
 //         include: Wallet,
 //       })
 //     );

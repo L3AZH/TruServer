@@ -3,7 +3,11 @@ const { ErrorResponse } = require("../models/ErrorResponse");
 const Account = require("../database/models/Account");
 const AsyncMiddleware = require("../middlewares/AsyncMiddleware");
 const bcrypt = require("bcrypt");
-const hassPassword = require("../middlewares/HassPassword");
+
+async function hassPassword(password) {
+  const salt = await bcrypt.genSalt(13);
+  return bcrypt.hash(password, salt);
+}
 
 exports.getCurrentAccountInfo = AsyncMiddleware(async (req, res, next) => {
   const dataResult = await Account.findByPk(req.user._email);

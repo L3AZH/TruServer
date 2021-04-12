@@ -18,7 +18,7 @@ exports.register = AsyncMiddleware(async (req, res, next) => {
     joindate: new Date(),
   });
   return res
-    .header("x-auth-token", dataResult.generateToken())
+    .header("Authorization", "Bearer " + dataResult.generateToken())
     .status(200)
     .json(
       new SuccessResponse(200, {
@@ -44,7 +44,7 @@ exports.login = AsyncMiddleware(async (req, res, next) => {
         .json(new ErrorResponse(400, "Invalid email or password"));
     }
     return res
-      .header("x-auth-token", dataResult.generateToken())
+      .header("Authorization", "Bearer " + dataResult.generateToken())
       .status(200)
       .json(
         new SuccessResponse(200, {

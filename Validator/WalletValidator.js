@@ -15,16 +15,16 @@ module.exports = {
         if (parseFloat(value) < 0)
           return Promise.reject("Amount must not negative");
       }),
-    body("email")
-      .trim()
-      .notEmpty()
-      .withMessage("Please fill email")
-      .isEmail()
-      .withMessage("Invalid email")
-      .custom(async (value) => {
-        const dataResult = await Account.findByPk(value);
-        if (dataResult == null) return Promise.reject("Not found any email !!");
-      }),
+    // body("email")
+    //   .trim()
+    //   .notEmpty()
+    //   .withMessage("Please fill email")
+    //   .isEmail()
+    //   .withMessage("Invalid email")
+    //   .custom(async (value) => {
+    //     const dataResult = await Account.findByPk(value);
+    //     if (dataResult == null) return Promise.reject("Not found any email !!");
+    //   }),
     body("idWalletType")
       .trim()
       .notEmpty()

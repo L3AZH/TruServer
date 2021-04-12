@@ -2,13 +2,14 @@ const { ErrorResponse } = require("../models/ErrorResponse");
 const jwt = require("jsonwebtoken");
 
 const jwtAuth = (req, res, next) => {
-  const token = req.header("x-auth-token");
-  if (!token) {
+  const authBearString = req.headers.authorization;
+  if (!authBearString) {
     return res
       .status(401)
       .json(new ErrorResponse(401, "Invalid token, Accessed denied !!"));
   }
   try {
+    const token = authBearString.split(" ")[1];
     const decode = jwt.verify(token, process.env.DB_PRIVATEKEY);
     req.user = decode;
     next();
