@@ -17,4 +17,23 @@ router.get(
   WalletController.getListWalletOfEmail
 );
 
+router.delete(
+  "/delete-wallet/:type",
+  AuthProtection,
+  WalletValidation.deleteWalletWithNameValidation,
+  WalletValidation.result,
+  WalletController.deleteWalletWithName
+);
+
+router.put(
+  "/update-wallet/:type",
+  AuthProtection,
+  [
+    WalletValidation.updateWalletWithNameParamsValidation,
+    WalletValidation.updateWalletWithNameBodyValidation,
+  ],
+  WalletValidation.result,
+  WalletController.updateWalletWithName
+);
+
 module.exports = router;

@@ -1,4 +1,4 @@
-const { body, validationResult } = require("express-validator");
+const { body, param, validationResult } = require("express-validator");
 const { ErrorResponse } = require("../models/ErrorResponse");
 const Account = require("../database/models/Account");
 const WalletType = require("../database/models/WalletType");
@@ -36,6 +36,22 @@ module.exports = {
         if (dataResult == null)
           return Promise.reject("Not found any id wallet type !! ");
       }),
+  ],
+  deleteWalletWithNameValidation: [
+    //custom cái type ko tồn tại
+    param("type").trim().notEmpty().withMessage("Type is missing in param"),
+  ],
+  updateWalletWithNameBodyValidation: [
+    body("amount")
+      .trim()
+      .notEmpty()
+      .withMessage("Please input amount")
+      .isNumeric()
+      .withMessage("Invalid amount"),
+  ],
+  updateWalletWithNameParamsValidation: [
+    //custom cái type ko tồn tại
+    param("type").trim().notEmpty().withMessage("Type is missing in param"),
   ],
   result: (req, res, next) => {
     const errors = validationResult(req);

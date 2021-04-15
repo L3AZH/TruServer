@@ -12,12 +12,14 @@ const Budget = require("./database/models/Budget");
 const AuthRouter = require("./routes/AuthRoute");
 const AccountRouter = require("./routes/AccountRoute");
 const WalletRouter = require("./routes/WalletRoute");
+const TransactionRouter = require("./routes/TransactionRoute");
 const errorHandler = require("./middlewares/ErrorHandler");
 app.use(express.json());
 app.use(errorHandler);
 app.use("/api/auth", AuthRouter);
 app.use("/api/account", AccountRouter);
 app.use("/api/account/wallet", WalletRouter);
+app.use("/api/account/wallet/transaction", TransactionRouter);
 // async function testConnection(){
 //     try{
 //         await sequelize.authenticate()
