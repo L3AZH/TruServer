@@ -4,14 +4,14 @@ const TransactionValidator = require("../Validator/TransactionValidator");
 const { route } = require("./WalletRoute");
 
 router.get(
-  "/:idWallet",
+  "/all-transaction/:idWallet",
   TransactionValidator.getTransactionWithIdWalletValidation,
   TransactionValidator.result,
   TransactionController.getTransactionWithIdWallet
 );
 
 router.get(
-  "/:idWallet/:idTransType",
+  "/info-transaction/:idWallet/:idTransType",
   TransactionValidator.getTransactionWithIdWalletAndIdTypeValidation,
   TransactionValidator.result,
   TransactionController.getTransactionWithIdWalletAndIdType
