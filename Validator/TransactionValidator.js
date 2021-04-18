@@ -53,7 +53,12 @@ module.exports = {
       .notEmpty()
       .withMessage("Please fill id transaction")
       .isNumeric()
-      .withMessage("Invalid Transaction ID"),
+      .withMessage("Invalid Transaction ID")
+      .custom(async (value) => {
+        const dataResult = await Transaction.findByPk(value);
+        if (dataResult == null)
+          return Promise.reject("Id Transaction not found");
+      }),
   ],
   updateTransactionParamsValidation: [
     param("idTransaction")
@@ -61,7 +66,12 @@ module.exports = {
       .notEmpty()
       .withMessage("Please fill id transaction")
       .isNumeric()
-      .withMessage("Invalid Transaction ID"),
+      .withMessage("Invalid Transaction ID")
+      .custom(async (value) => {
+        const dataResult = await Transaction.findByPk(value);
+        if (dataResult == null)
+          return Promise.reject("Id Transaction not found");
+      }),
   ],
   updateTransactionBodyValidation: [
     body("idTransType").trim().isNumeric().withMessage("Invalid Id TransType"),

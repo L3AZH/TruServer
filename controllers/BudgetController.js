@@ -36,11 +36,57 @@ exports.createNewBudget = AsyncMiddleware(async (req, res, next) => {
     WalletIdWallet: req.body.idWallet,
     amountBudget: req.body.amount,
     note: req.body.note,
-    date: new Date(),
+    date: req.body.date,
   });
   return res
     .status(200)
     .json(
       new SuccessResponse(200, { message: "Create Budget successfully !!" })
     );
+});
+
+exports.deleteBudget = AsyncMiddleware(async (req, res, next) => {
+  const deleteResult = await Budget.destroy({
+    where: { idBudget: req.params.idBudget },
+  });
+  if (deleteResult == 1) {
+    return res
+      .status(200)
+      .json(
+        new SuccessResponse(200, { message: "Delete Budget successfully !!" })
+      );
+  }
+  return res.status(500).json(
+    new ErrorResponse(500, {
+      message: "Can't Delete Budget Something was wrong ",
+    })
+  );
+});
+
+exports.updateBudget = AsyncMiddleware(async (req, res, next) => {
+  const dataBefore = await Budget.findByPk(req.params.idBudget);
+  if (req.body.amount) dataBefore.amountBudget = req.body.amount;
+  if (req.body.note) dataBefore.note = req.body.note;
+  if (req.body.date) dataBefore.date = req.body.date;
+  const updateResult = await Budget.update(
+    {
+      amountBudget: dataBefore.amountBudget,
+      note: dataBefore.note,
+      date: dataBefore.date,
+    },
+    { where: { idBudget: dataBefore.idBudget } }
+  );
+  if (updateResult == 1) {
+    return res
+      .status(200)
+      .json(
+        new SuccessResponse(200, { message: "Update Budget successfully !!" })
+      );
+  }
+  return res.status(500).json(
+    new ErrorResponse(500, {
+      message:
+        "Can't Update Budget, Something was wrong or data is the same with data before udpate",
+    })
+  );
 });

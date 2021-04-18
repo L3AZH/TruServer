@@ -85,6 +85,7 @@ exports.deleteTransaction = AsyncMiddleware(async (req, res, next) => {
 });
 
 exports.updateTransaction = AsyncMiddleware(async (req, res, next) => {
+  //check idTransaction tồn tại hay chưa trong validation
   const dataBeforeUpdate = await Transaction.findByPk(req.params.idTransaction);
   if (req.body.idTransType)
     dataBeforeUpdate.TransTypeIdTransType = req.body.idTransType;

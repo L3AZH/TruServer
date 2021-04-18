@@ -8,6 +8,7 @@ WalletType.init(
     idWalletType: {
       primaryKey: true,
       allowNull: false,
+      autoIncrement: true,
       type: DataTypes.INTEGER,
     },
     type: {
