@@ -1,4 +1,4 @@
-const { ErrorResponse } = require("../models/errorResponse");
+const { ErrorResponse } = require("../models/ErrorResponse");
 
 const errorHandler = (err, req, res, next) => {
   console.log(err);
