@@ -18,6 +18,7 @@ const WalletTypeRouter = require("./routes/WalletTypeRoute");
 const TransTypeRouter = require("./routes/TransTypeRoute");
 const errorHandler = require("./middlewares/ErrorHandler");
 app.use(express.json());
+sequelize.sync();
 app.use(errorHandler);
 app.use("/api/auth", AuthRouter);
 app.use("/api/account", AccountRouter);
