@@ -32,7 +32,7 @@ exports.login = AsyncMiddleware(async (req, res, next) => {
   if (dataResult == null) {
     return res
       .status(400)
-      .json(new ErrorResponse(400, "Invalid email or password"));
+      .json(new ErrorResponse(400, { message: "Invalid email or password" }));
   } else {
     const validPassword = await bcrypt.compare(
       req.body.password,
@@ -41,7 +41,7 @@ exports.login = AsyncMiddleware(async (req, res, next) => {
     if (!validPassword) {
       return res
         .status(400)
-        .json(new ErrorResponse(400, "Invalid email or password"));
+        .json(new ErrorResponse(400, { message: "Invalid email or password" }));
     }
     return res
       .header("Authorization", "Bearer " + dataResult.generateToken())
