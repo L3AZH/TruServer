@@ -43,11 +43,13 @@ exports.login = AsyncMiddleware(async (req, res, next) => {
         .status(400)
         .json(new ErrorResponse(400, { message: "Invalid email or password" }));
     }
+    const token = dataResult.generateToken();
     return res
-      .header("Authorization", "Bearer " + dataResult.generateToken())
+      .header("Authorization", "Bearer " + token)
       .status(200)
       .json(
         new SuccessResponse(200, {
+          token,
           message: `Login successfull with email: ${dataResult.email}`,
         })
       );
