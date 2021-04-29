@@ -17,9 +17,10 @@ const BudgetRouter = require("./routes/BudgetRoute");
 const WalletTypeRouter = require("./routes/WalletTypeRoute");
 const TransTypeRouter = require("./routes/TransTypeRoute");
 const errorHandler = require("./middlewares/ErrorHandler");
+const cors = require("cors");
 app.use(express.json());
+app.use(cors());
 sequelize.sync();
-app.use(errorHandler);
 app.use("/api/auth", AuthRouter);
 app.use("/api/account", AccountRouter);
 app.use("/api/account/wallet", WalletRouter);
@@ -27,6 +28,7 @@ app.use("/api/account/wallet/transaction", TransactionRouter);
 app.use("/api/account/wallet/budget", BudgetRouter);
 app.use("/api/wallettype", WalletTypeRouter);
 app.use("/api/transtype", TransTypeRouter);
+app.use(errorHandler);
 // async function testConnection(){
 //     try{
 //         await sequelize.authenticate()
