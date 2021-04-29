@@ -36,6 +36,7 @@ exports.newWallet = AsyncMiddleware(async (req, res, next) => {
     return res.status(400).json(
       new ErrorResponse(400, {
         message: "Wallet with this type already exist on this Account !!",
+        newObject: dataResult,
       })
     );
   await Wallet.create({

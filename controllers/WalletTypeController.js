@@ -29,6 +29,7 @@ exports.createNewWalletType = AsyncMiddleware(async (req, res, next) => {
   return res.status(200).json(
     new SuccessResponse(200, {
       message: "Create new Wallet Type successfully !!",
+      newObject: dataResult,
     })
   );
 });

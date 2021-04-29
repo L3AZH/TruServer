@@ -41,7 +41,10 @@ exports.createNewBudget = AsyncMiddleware(async (req, res, next) => {
   return res
     .status(200)
     .json(
-      new SuccessResponse(200, { message: "Create Budget successfully !!" })
+      new SuccessResponse(200, {
+        message: "Create Budget successfully !!",
+        newObject: dataResult,
+      })
     );
 });
 

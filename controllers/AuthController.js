@@ -23,6 +23,12 @@ exports.register = AsyncMiddleware(async (req, res, next) => {
     .json(
       new SuccessResponse(200, {
         message: "Created Account Successfully !!",
+        newObject: {
+          email: dataResult.email,
+          username: dataResult.username,
+          phone: dataResult.phone,
+          joindate: dataResult.joindate,
+        },
       })
     );
 });

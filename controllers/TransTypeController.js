@@ -20,13 +20,12 @@ exports.createNewTransType = AsyncMiddleware(async (req, res, next) => {
     type: req.body.type,
     categoryName: req.body.categoryName,
   });
-  return res
-    .status(200)
-    .json(
-      new SuccessResponse(200, {
-        message: "Create new TransType successfully !!",
-      })
-    );
+  return res.status(200).json(
+    new SuccessResponse(200, {
+      message: "Create new TransType successfully !!",
+      newObject: dataResult,
+    })
+  );
 });
 
 exports.deteletTransType = AsyncMiddleware(async (req, res, next) => {
