@@ -36,19 +36,19 @@ exports.newWallet = AsyncMiddleware(async (req, res, next) => {
     return res.status(400).json(
       new ErrorResponse(400, {
         message: "Wallet with this type already exist on this Account !!",
-        newObject: dataResult,
       })
     );
-  await Wallet.create({
+  const dataResult = await Wallet.create({
     amount: req.body.amount,
     AccountEmail: req.user._email,
     WalletTypeIdWalletType: req.body.idWalletType,
   });
-  return res
-    .status(200)
-    .json(
-      new SuccessResponse(200, { message: "Created Wallet successfully !!" })
-    );
+  return res.status(200).json(
+    new SuccessResponse(200, {
+      message: "Created Wallet successfully !!",
+      newObject: dataResult,
+    })
+  );
 });
 
 exports.deleteWalletWithName = AsyncMiddleware(async (req, res, next) => {
