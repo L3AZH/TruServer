@@ -1,4 +1,6 @@
 const express = require("express");
+const swaggerDoc = require("./swagger.json");
+const swaggerUI = require("swagger-ui-express");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,6 +23,7 @@ const cors = require("cors");
 app.use(express.json());
 app.use(cors());
 sequelize.sync();
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDoc));
 app.use("/api/auth", AuthRouter);
 app.use("/api/account", AccountRouter);
 app.use("/api/account/wallet", WalletRouter);

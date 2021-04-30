@@ -6,7 +6,9 @@ const jwtAuth = (req, res, next) => {
   if (!authBearString) {
     return res
       .status(401)
-      .json(new ErrorResponse(401, "Invalid token, Accessed denied !!"));
+      .json(
+        new ErrorResponse(401, { message: "Invalid token, Accessed denied !!" })
+      );
   }
   try {
     const token = authBearString.split(" ")[1];
@@ -14,7 +16,9 @@ const jwtAuth = (req, res, next) => {
     req.user = decode;
     next();
   } catch (err) {
-    return res.status(401).json(new ErrorResponse(401, "Unauthorized"));
+    return res
+      .status(401)
+      .json(new ErrorResponse(401, { message: "Unauthorized" }));
   }
 };
 

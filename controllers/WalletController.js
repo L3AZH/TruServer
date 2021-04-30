@@ -90,8 +90,8 @@ exports.deleteWalletWithName = AsyncMiddleware(async (req, res, next) => {
       })
     );
   } else {
-    return res.status(404).json(
-      new ErrorResponse(404, {
+    return res.status(400).json(
+      new ErrorResponse(400, {
         message: "Cannot delete wallet. something was wrong !!",
       })
     );

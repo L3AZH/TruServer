@@ -60,7 +60,7 @@ module.exports = {
     if (!errors.isEmpty()) {
       return res
         .status(500)
-        .json(new ErrorResponse(500, { error: errors.array() }));
+        .json(new ErrorResponse(500, { message: errors.array()[0].msg }));
     }
     next();
   },

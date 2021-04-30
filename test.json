@@ -1,0 +1,797 @@
+{
+  "openapi": "3.0.2",
+  "servers": [
+    {
+      "url": "http://localhost:{port}/adminPanel/api",
+      "description": "development server",
+      "variables": {
+        "port": { "default": "5000" }
+      }
+    },
+    {
+      "url": "http://139.180.196.41:6969/adminPanel/api",
+      "description": "production server"
+    }
+  ],
+  "info": {
+    "version": "1.7.3",
+    "title": "Admin Panel",
+    "description": "This is an admin panel for manage e-commerce app"
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "User authentication"
+    },
+    {
+      "name": "User",
+      "description": "Operations about user"
+    },
+    {
+      "name": "File",
+      "description": "Operations about file"
+    },
+    {
+      "name": "Role",
+      "description": "Operations about role"
+    },
+    {
+      "name": "Product",
+      "description": "Operations about product"
+    },
+    {
+      "name": "Category",
+      "description": "Operations about category"
+    },
+    {
+      "name": "Staff",
+      "description": "Operations about staff"
+    },
+    {
+      "name": "Customer",
+      "description": "Operations about customer"
+    },
+    {
+      "name": "Invoice",
+      "description": "Operations about invoice"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "user registeration",
+        "security": [{ "basicAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "examples": {
+                "user": {
+                  "value": {
+                    "fullname": "DragonGod-sama",
+                    "email": "admin@gmail.com",
+                    "password": "12345678",
+                    "role": ""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "user login",
+        "security": [{ "basicAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "examples": {
+                "test": {
+                  "value": {
+                    "email": "test@gmail.com",
+                    "password": "12345678"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/user/getCurrent": {
+      "get": {
+        "tags": ["User"],
+        "summary": "get current auth user",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/file/{filename}": {
+      "get": {
+        "tags": ["File"],
+        "summary": "get file (image, ...)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "description": "filename of model specific field(featureImg, avatar, ...)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/role": {
+      "get": {
+        "tags": ["Role"],
+        "summary": "get roles",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Role"],
+        "summary": "create new role",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Role"
+              },
+              "examples": {
+                "test": {
+                  "value": {
+                    "name": "",
+                    "permissions": [],
+                    "methods": []
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/product": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "get product list",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Product"],
+        "summary": "create new product",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/product/{productId}": {
+      "patch": {
+        "tags": ["Product"],
+        "summary": "toggle active state of product",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "product ObjectId from mongodb",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/category": {
+      "get": {
+        "tags": ["Category"],
+        "summary": "get category list",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Category"],
+        "summary": "create new category",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Category"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/category/{categoryId}": {
+      "patch": {
+        "tags": ["Category"],
+        "summary": "toggle active state of category",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "description": "category ObjectId from mongodb",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/staff": {
+      "get": {
+        "tags": ["Staff"],
+        "summary": "get staff list",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Staff"],
+        "summary": "create new staff",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Staff"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/invoice": {
+      "get": {
+        "tags": ["Invoice"],
+        "summary": "get invoice list",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Invoice"],
+        "summary": "create new invoice",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Invoice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "OK": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "success": true,
+                "code": 200,
+                "data": {}
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "success": false,
+                "code": 404,
+                "message": ""
+              }
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "success": false,
+                "code": 400,
+                "message": {
+                  "errorField": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "success": false,
+                "code": 401,
+                "message": ""
+              }
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "no permission to access",
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "success": false,
+                "code": 403,
+                "message": ""
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "required": ["fullname", "email", "password"],
+        "properties": {
+          "fullname": {
+            "type": "string",
+            "example": "dragingod-sama"
+          },
+          "email": {
+            "type": "string",
+            "uniqueItems": true,
+            "example": "admin@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 6
+          },
+          "phone": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["devAdmin", "companyAdmin"],
+            "example": "devAdmin"
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "Role": {
+        "type": "object",
+        "required": ["name", "permissions", "methods"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "methods": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "ALL"]
+            }
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "required": ["name", "price", "featuredImg"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "instock": {
+            "type": "number",
+            "default": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": { "type": "string", "format": "binary" },
+            "default": []
+          },
+          "featuredImg": {
+            "type": "string",
+            "format": "binary"
+          },
+          "categories": {
+            "type": "array",
+            "items": { "type": "string", "format": "binary" },
+            "default": []
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "uniqueItems": true
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "Staff": {
+        "type": "object",
+        "required": ["firstname", "lastname", "gender", "contactEmail"],
+        "properties": {
+          "firstname": {
+            "type": "string",
+            "example": "dragingod-sama"
+          },
+          "lastname": {
+            "type": "string",
+            "example": "dragingod-sama"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female"]
+          },
+          "phone": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "contactEmail": {
+            "type": "string",
+            "uniqueItems": true,
+            "example": "someone@gmail.com"
+          },
+          "invoices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Invoice"
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "required": ["total"],
+        "properties": {
+          "fromStaff": {
+            "type": "string",
+            "$ref": "#/components/schemas/Staff"
+          },
+          "clientInfo": {
+            "type": "string",
+            "$ref": "#/components/schemas/Customer"
+          },
+          "productList": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "quantity": { "type": "number" }
+              }
+            }
+          },
+          "paymentDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "total": {
+            "type": "number"
+          },
+          "tax": {
+            "type": "number",
+            "default": 0
+          },
+          "shippingFee": {
+            "type": "number",
+            "default": 0
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "Customer": {
+        "type": "object",
+        "required": ["firstname", "lastname", "gender", "contactEmail"],
+        "properties": {
+          "firstname": {
+            "type": "string",
+            "example": "dragingod-sama"
+          },
+          "lastname": {
+            "type": "string",
+            "example": "dragingod-sama"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female"]
+          },
+          "phone": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "uniqueItems": true,
+            "example": "someone@gmail.com"
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    }
+  }
+}

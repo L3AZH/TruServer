@@ -1,0 +1,630 @@
+{
+  "openapi": "3.0.2",
+  "servers": [
+    {
+      "url": "http://localhost:{port}/api",
+      "description": "development server",
+      "variables": {
+        "port": { "default": "5000" }
+      }
+    },
+    {
+      "url": "http://139.180.196.41:6969/api",
+      "description": "production server"
+    }
+  ],
+  "info": {
+    "version": "1.7.3",
+    "title": "Quan ly thu chi api",
+    "description": "API doc "
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "User authentication"
+    },
+    {
+      "name": "Account",
+      "description": "Operations about account"
+    },
+    {
+      "name": "Wallet",
+      "description": "Operations about wallte"
+    },
+    {
+      "name": "Transaction",
+      "description": "Operations about transaction"
+    },
+    {
+      "name": "Budget",
+      "description": "Operations about budget"
+    },
+    {
+      "name": "Wallet Type",
+      "description": "Operations about wallet type"
+    },
+    {
+      "name": "Transaction Type",
+      "description": "Operations about transaction type"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "user registeration",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Account"
+              },
+              "examples": {
+                "account": {
+                  "value": {
+                    "email": "admin@gmail.com",
+                    "username": "l3azh",
+                    "password": "12345678",
+                    "phone": "0123456789"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "user login",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Account"
+              },
+              "examples": {
+                "test": {
+                  "value": {
+                    "email": "admin@gmail.com",
+                    "password": "12345678"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/account/me": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "get current auth user",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/account/update": {
+      "post": {
+        "tags": ["Account"],
+        "summary": "udpate user's information",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Account"
+              },
+              "examples": {
+                "update account": {
+                  "value": {
+                    "password": "naruto99",
+                    "username": "l3azh"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/account/wallet/me-all-wallet": {
+      "get": {
+        "tags": ["Wallet"],
+        "summary": "get current user's list wallet",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/account/wallet/create-wallet": {
+      "post": {
+        "tags": ["Wallet"],
+        "summary": "create new wallet",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Account"
+              },
+              "examples": {
+                "create new wallet": {
+                  "value": {
+                    "amount": "700000",
+                    "idWalletType": "2"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/account/wallet/delete-wallet/{type}": {
+      "delete": {
+        "tags": ["Wallet"],
+        "summary": "delete wallet",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "wallet type from mysql",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/category": {
+      "get": {
+        "tags": ["Category"],
+        "summary": "get category list",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Category"],
+        "summary": "create new category",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Category"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/category/{categoryId}": {
+      "patch": {
+        "tags": ["Category"],
+        "summary": "toggle active state of category",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "description": "category ObjectId from mongodb",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/staff": {
+      "get": {
+        "tags": ["Staff"],
+        "summary": "get staff list",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Staff"],
+        "summary": "create new staff",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Staff"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/invoice": {
+      "get": {
+        "tags": ["Invoice"],
+        "summary": "get invoice list",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Invoice"],
+        "summary": "create new invoice",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Invoice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "OK": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "success": true,
+                "code": 200,
+                "data": {}
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "success": false,
+                "code": 404,
+                "data": { "message": "" }
+              }
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "success": false,
+                "code": 400,
+                "data": { "message": "" }
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "success": false,
+                "code": 401,
+                "data": { "message": "" }
+              }
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "no permission to access",
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "success": false,
+                "code": 403,
+                "data": { "message": "" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Account": {
+        "type": "object",
+        "required": ["email", "username", "password", "phone"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "l3azh@gmail.com",
+            "uniqueItems": true
+          },
+          "username": {
+            "type": "string",
+            "example": "l3azh"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 6
+          },
+          "phone": {
+            "type": "string"
+          },
+          "joindate": {
+            "type": "string"
+          }
+        }
+      },
+      "Wallet": {
+        "type": "object",
+        "required": ["idWallet", "amount", "WalletTypeIdWalletType"],
+        "properties": {
+          "idWallet": {
+            "type": "number",
+            "uniqueItems": true
+          },
+          "amount": {
+            "type": "number"
+          },
+          "AccountEmail": {
+            "type": "string",
+            "$ref": "#/components/schemas/Account"
+          },
+          "WalletTypeIdWalletType": {
+            "type": "number",
+            "$ref": "#/components/schemas/WalletType"
+          }
+        }
+      },
+      "WalletType": {
+        "type": "object",
+        "required": ["idWalletType", "type"],
+        "properties": {
+          "idWalletType": {
+            "type": "number",
+            "uniqueItems": true
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      },
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "idTransaction": {
+            "type": "number",
+            "uniqueItems": true
+          },
+          "WalletIdWallet": {
+            "type": "number",
+            "$ref": "#/components/schemas/Wallet"
+          },
+          "TransTypeIdTransType": {
+            "type": "number",
+            "$ref": "#/components/schemas/TransactionType"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          }
+        }
+      },
+      "TransactionType": {
+        "type": "object",
+        "properties": {
+          "idTransType": {
+            "type": "number",
+            "uniqueItems": true
+          },
+          "type": {
+            "type": "string",
+            "enum": ["thu", "chi"]
+          },
+          "categoryName": {
+            "type": "string",
+            "example": "do uong, tien nha, tien nuoc"
+          }
+        }
+      },
+      "Budget": {
+        "type": "object",
+        "properties": {
+          "idBudget": {
+            "type": "number",
+            "uniqueItems": true
+          },
+          "amountBudget": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "WalletIdWallet": {
+            "type": "number",
+            "$ref": "#/components/schemas/Wallet"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

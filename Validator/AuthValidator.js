@@ -30,7 +30,7 @@ module.exports = {
     body("email")
       .trim()
       .isEmail()
-      .withMessage("This is not a email")
+      .withMessage("Invalid Email")
       .notEmpty()
       .withMessage("Please fill email address"),
     body("password").trim().notEmpty().withMessage("Please fill password "),
@@ -40,7 +40,7 @@ module.exports = {
     if (!errors.isEmpty()) {
       return res.status(400).json(
         new ErrorResponse(400, {
-          errors: errors.array(),
+          message: errors.array()[0].msg,
         })
       );
     }

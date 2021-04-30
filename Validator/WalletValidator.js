@@ -58,7 +58,7 @@ module.exports = {
     if (!errors.isEmpty()) {
       return res
         .status(400)
-        .json(new ErrorResponse(400, { error: errors.array() }));
+        .json(new ErrorResponse(400, { message: errors.array()[0].msg }));
     }
     next();
   },
