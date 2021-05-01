@@ -9,7 +9,7 @@
       }
     },
     {
-      "url": "http://139.180.196.41:6969/api",
+      "url": "http://139.180.196.41:9090/api",
       "description": "production server"
     }
   ],
@@ -254,11 +254,39 @@
         }
       }
     },
-    "/category": {
-      "get": {
-        "tags": ["Category"],
-        "summary": "get category list",
+    "/account/wallet/update-wallet/{type}": {
+      "put": {
+        "tags": ["Wallet"],
+        "summary": "update wallet",
         "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "wallet type from mysql",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Wallet"
+              },
+              "examples": {
+                "update wallet": {
+                  "value": {
+                    "amount": "700077"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/OK"
@@ -266,31 +294,8 @@
           "404": {
             "$ref": "#/components/responses/NotFound"
           },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          }
-        }
-      },
-      "post": {
-        "tags": ["Category"],
-        "summary": "create new category",
-        "security": [{ "bearerAuth": [] }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Category"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/OK"
-          },
           "400": {
-            "$ref": "#/components/responses/BadRequest"
+            "$ref": "#/components/responses/NotFound"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -298,19 +303,19 @@
         }
       }
     },
-    "/category/{categoryId}": {
-      "patch": {
-        "tags": ["Category"],
-        "summary": "toggle active state of category",
+    "/account/wallet/transaction/all-transaction/{idWallet}": {
+      "get": {
+        "tags": ["Transaction"],
+        "summary": "get all transaction of wallet with id wallet",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
-            "name": "categoryId",
+            "name": "idWallet",
             "in": "path",
-            "description": "category ObjectId from mongodb",
+            "description": "idWallet from table wallet mysql ",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
@@ -318,55 +323,11 @@
           "200": {
             "$ref": "#/components/responses/OK"
           },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          }
-        }
-      }
-    },
-    "/staff": {
-      "get": {
-        "tags": ["Staff"],
-        "summary": "get staff list",
-        "security": [{ "bearerAuth": [] }],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/OK"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          }
-        }
-      },
-      "post": {
-        "tags": ["Staff"],
-        "summary": "create new staff",
-        "security": [{ "bearerAuth": [] }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Staff"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/OK"
-          },
           "400": {
-            "$ref": "#/components/responses/BadRequest"
+            "$ref": "#/components/responses/NotFound"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -374,14 +335,37 @@
         }
       }
     },
-    "/invoice": {
+    "/account/wallet/transaction/info-transaction/{idWallet}/{idWalletType}": {
       "get": {
-        "tags": ["Invoice"],
-        "summary": "get invoice list",
+        "tags": ["Transaction"],
+        "summary": "get list transaction of wallet with id wallet and id wallet type",
         "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "idWallet",
+            "in": "path",
+            "description": "idWallet from table wallet mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "idWalletType",
+            "in": "path",
+            "description": "idWalletType from table WalletType mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/NotFound"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -390,27 +374,41 @@
             "$ref": "#/components/responses/Unauthorized"
           }
         }
-      },
+      }
+    },
+    "/account/wallet/transaction/create-transaction": {
       "post": {
-        "tags": ["Invoice"],
-        "summary": "create new invoice",
+        "tags": ["Transaction"],
+        "summary": "create new transaction of wallet",
         "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Invoice"
+                "$ref": "#/components/schemas/Transaction"
+              },
+              "examples": {
+                "new wallet": {
+                  "value": {
+                    "idWallet": "12",
+                    "idTransType": "7",
+                    "amount": "30000"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "$ref": "#/components/responses/OK"
           },
           "400": {
-            "$ref": "#/components/responses/BadRequest"
+            "$ref": "#/components/responses/NotFound"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"

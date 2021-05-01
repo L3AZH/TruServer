@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const jwtAuth = (req, res, next) => {
   const authBearString = req.headers.authorization;
+  console.log("origin: " + authBearString);
   if (!authBearString) {
     return res
       .status(401)
@@ -12,6 +13,7 @@ const jwtAuth = (req, res, next) => {
   }
   try {
     const token = authBearString.split(" ")[1];
+    console.log("split[1]: " + token);
     const decode = jwt.verify(token, process.env.DB_PRIVATEKEY);
     req.user = decode;
     next();
