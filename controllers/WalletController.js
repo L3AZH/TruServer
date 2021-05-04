@@ -70,31 +70,36 @@ exports.deleteWalletWithName = AsyncMiddleware(async (req, res, next) => {
     );
   }
   //console.log(dataResult[0].idWallet);
-  const resultDeleteBudget = await Budget.destroy({
+  const resultBudgetExist = await Budget.findOne({
     where: { WalletIdWallet: dataResult[0].idWallet },
   });
-  const resultDeteleTransaction = await Transaction.destroy({
+  const resulTransactionExist = await Transaction.findOne({
     where: { WalletIdWallet: dataResult[0].idWallet },
   });
-  const resultDeleteWallet = await Wallet.destroy({
-    where: { idWallet: dataResult[0].idWallet },
-  });
-  if (
-    resultDeleteWallet == 1 &&
-    resultDeteleTransaction == 1 &&
-    resultDeleteBudget == 1
-  ) {
-    return res.status(200).json(
-      new SuccessResponse(200, {
-        message: "Deleted Wallet successfully",
-      })
-    );
-  } else {
+  if (resultBudgetExist != null || resulTransactionExist != null) {
     return res.status(400).json(
       new ErrorResponse(400, {
-        message: "Cannot delete wallet. something was wrong !!",
+        message: "Cannot delete wallet. Budget or Transaction Exist",
       })
     );
+  }
+  if (resultBudgetExist == null && resulTransactionExist == null) {
+    const resultDeleteWallet = await Wallet.destroy({
+      where: { idWallet: dataResult[0].idWallet },
+    });
+    if (resultDeleteWallet == 1) {
+      return res.status(200).json(
+        new SuccessResponse(200, {
+          message: "Deleted Wallet successfully",
+        })
+      );
+    } else {
+      return res.status(400).json(
+        new ErrorResponse(400, {
+          message: "Cannot delete wallet. something was wrong !!",
+        })
+      );
+    }
   }
 });
 

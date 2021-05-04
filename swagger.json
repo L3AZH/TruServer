@@ -415,6 +415,35 @@
           }
         }
       }
+    },
+    "/account/wallet/transaction/delete-transaction/{idTransaction}": {
+      "delete": {
+        "tags": ["Transaction"],
+        "summary": "delete transaction of wallet",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "idTransaction",
+            "in": "path",
+            "description": "idTransaction from table transaction mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
     }
   },
   "components": {

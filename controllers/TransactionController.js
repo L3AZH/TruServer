@@ -78,8 +78,8 @@ exports.deleteTransaction = AsyncMiddleware(async (req, res, next) => {
       })
     );
   }
-  return res.status(500).json(
-    new ErrorResponse(500, {
+  return res.status(400).json(
+    new ErrorResponse(400, {
       message: "Can't Delete Transaction, something was wrong !!!",
     })
   );
