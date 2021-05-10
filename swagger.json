@@ -14,7 +14,7 @@
     }
   ],
   "info": {
-    "version": "1.7.3",
+    "version": "2.2.11",
     "title": "Quan ly thu chi api",
     "description": "API doc "
   },
@@ -295,7 +295,7 @@
             "$ref": "#/components/responses/NotFound"
           },
           "400": {
-            "$ref": "#/components/responses/NotFound"
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -324,7 +324,7 @@
             "$ref": "#/components/responses/OK"
           },
           "400": {
-            "$ref": "#/components/responses/NotFound"
+            "$ref": "#/components/responses/BadRequest"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -365,7 +365,7 @@
             "$ref": "#/components/responses/OK"
           },
           "400": {
-            "$ref": "#/components/responses/NotFound"
+            "$ref": "#/components/responses/BadRequest"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -405,7 +405,7 @@
             "$ref": "#/components/responses/OK"
           },
           "400": {
-            "$ref": "#/components/responses/NotFound"
+            "$ref": "#/components/responses/BadRequest"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -438,6 +438,236 @@
           },
           "400": {
             "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/account/wallet/transaction/update-transaction/{idTransaction}": {
+      "put": {
+        "tags": ["Transaction"],
+        "summary": "update transaction of wallet",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "idTransaction",
+            "in": "path",
+            "description": "idTransaction from table transaction mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Transaction"
+              },
+              "examples": {
+                "update transaction": {
+                  "value": {
+                    "idTransType": "8",
+                    "amount": "170000",
+                    "note": "update transaction"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/account/wallet/budget/all-budget/{idWallet}": {
+      "get": {
+        "tags": ["Budget"],
+        "summary": "get list budget of wallet",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "idWallet",
+            "in": "path",
+            "description": "id wallet from table budget mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/account/wallet/budget/info-budget/{idBudget}": {
+      "get": {
+        "tags": ["Budget"],
+        "summary": "get info budget of wallet",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "idBudget",
+            "in": "path",
+            "description": "id budget from table budget mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/account/wallet/budget/create-budget": {
+      "post": {
+        "tags": ["Budget"],
+        "summary": "create new budget of wallet",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Budget"
+              },
+              "examples": {
+                "create new budget": {
+                  "value": {
+                    "idWallet": "12",
+                    "amount": "20000",
+                    "note": "tiền test",
+                    "date": "2021/04/18"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/account/wallet/budget/delete-budget/{idBudget}": {
+      "delete": {
+        "tags": ["Budget"],
+        "summary": "delete budget of wallet",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "idBudget",
+            "in": "path",
+            "description": "id budget from table budget mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/account/wallet/budget/update-budget/{idBudget}": {
+      "put": {
+        "tags": ["Budget"],
+        "summary": "update budget of wallet",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "idBudget",
+            "in": "path",
+            "description": "id budget from table budget mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Budget"
+              },
+              "examples": {
+                "update budget": {
+                  "value": {
+                    "amount": "20000",
+                    "note": "tiền test",
+                    "date": "2021/04/18"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"

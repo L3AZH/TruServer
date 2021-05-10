@@ -65,6 +65,7 @@ exports.updateWalletType = AsyncMiddleware(async (req, res, next) => {
     return res.status(200).json(
       new SuccessResponse(200, {
         message: "Update Wallet type Successfully !!",
+        updateObejct: dataBefore,
       })
     );
   }

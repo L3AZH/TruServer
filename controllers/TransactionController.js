@@ -104,11 +104,12 @@ exports.updateTransaction = AsyncMiddleware(async (req, res, next) => {
     return res.status(200).json(
       new SuccessResponse(200, {
         message: "Update Transaction successfully !!",
+        updateObject: dataBeforeUpdate,
       })
     );
   }
-  return res.status(500).json(
-    new ErrorResponse(500, {
+  return res.status(400).json(
+    new ErrorResponse(400, {
       message:
         "Can't Update Transaction, something was wrong or Data is the same with Data before data update",
     })

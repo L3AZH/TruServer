@@ -38,14 +38,12 @@ exports.createNewBudget = AsyncMiddleware(async (req, res, next) => {
     note: req.body.note,
     date: req.body.date,
   });
-  return res
-    .status(200)
-    .json(
-      new SuccessResponse(200, {
-        message: "Create Budget successfully !!",
-        newObject: dataResult,
-      })
-    );
+  return res.status(200).json(
+    new SuccessResponse(200, {
+      message: "Create Budget successfully !!",
+      newObject: dataResult,
+    })
+  );
 });
 
 exports.deleteBudget = AsyncMiddleware(async (req, res, next) => {
@@ -83,11 +81,14 @@ exports.updateBudget = AsyncMiddleware(async (req, res, next) => {
     return res
       .status(200)
       .json(
-        new SuccessResponse(200, { message: "Update Budget successfully !!" })
+        new SuccessResponse(200, {
+          message: "Update Budget successfully !!",
+          updateObejct: dataBefore,
+        })
       );
   }
-  return res.status(500).json(
-    new ErrorResponse(500, {
+  return res.status(400).json(
+    new ErrorResponse(400, {
       message:
         "Can't Update Budget, Something was wrong or data is the same with data before udpate",
     })
