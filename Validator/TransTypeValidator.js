@@ -59,8 +59,8 @@ module.exports = {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res
-        .status(500)
-        .json(new ErrorResponse(500, { message: errors.array()[0].msg }));
+        .status(400)
+        .json(new ErrorResponse(400, { message: errors.array()[0].msg }));
     }
     next();
   },

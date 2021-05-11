@@ -674,6 +674,270 @@
           }
         }
       }
+    },
+    "/wallettype/get-all-wallettype": {
+      "get": {
+        "tags": ["Wallet Type"],
+        "summary": "get list wallet type",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/wallettype/create-wallettype": {
+      "post": {
+        "tags": ["Wallet Type"],
+        "summary": "create new wallet type",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletType"
+              },
+              "examples": {
+                "new wallet type": {
+                  "value": {
+                    "type": "Ví hằng năm"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/wallettype/delete-wallettype/{idWalletType}": {
+      "delete": {
+        "tags": ["Wallet Type"],
+        "summary": "delete wallet type",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "idWalletType",
+            "in": "path",
+            "description": "idWalletType from table wallet type mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/wallettype/update-wallettype/{idWalletType}": {
+      "put": {
+        "tags": ["Wallet Type"],
+        "summary": "update wallet type",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "idWalletType",
+            "in": "path",
+            "description": "idWalletType from table wallet type mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletType"
+              },
+              "examples": {
+                "update budget": {
+                  "value": {
+                    "type": "ví của l3azh"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/transtype/get-all-transtype": {
+      "get": {
+        "tags": ["Transaction Type"],
+        "summary": "get list wallet type",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/transtype/create-transtype": {
+      "post": {
+        "tags": ["Transaction Type"],
+        "summary": "create new transaction type",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionType"
+              },
+              "examples": {
+                "new transaction type": {
+                  "value": {
+                    "type": "Chi",
+                    "categoryName": "Tiền test3"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/transtype/delete-transtype/{idTransactionType}": {
+      "delete": {
+        "tags": ["Transaction Type"],
+        "summary": "delete transaction type",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "idTransactionType",
+            "in": "path",
+            "description": "idTransactionType from table transaction type type mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/transtype/update-transtype/{idTransactionType}": {
+      "put": {
+        "tags": ["Transaction Type"],
+        "summary": "update transaction type",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "idTransactionType",
+            "in": "path",
+            "description": "idTransactionType from table transaction type type mysql ",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionType"
+              },
+              "examples": {
+                "update transaction type": {
+                  "value": {
+                    "type": "Thu",
+                    "categoryName": "Đồ uống"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
     }
   },
   "components": {

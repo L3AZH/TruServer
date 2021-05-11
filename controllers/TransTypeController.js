@@ -39,8 +39,8 @@ exports.deteletTransType = AsyncMiddleware(async (req, res, next) => {
         message: "Delete Trans Type successfully !!",
       })
     );
-  return res.status(500).json(
-    new ErrorResponse(500, {
+  return res.status(400).json(
+    new ErrorResponse(400, {
       message: "Can't Delete Trans Type, Something was wrong !!",
     })
   );
@@ -62,8 +62,8 @@ exports.udpateTransType = AsyncMiddleware(async (req, res, next) => {
       })
     );
   }
-  return res.status(500).json(
-    new ErrorResponse(500, {
+  return res.status(400).json(
+    new ErrorResponse(400, {
       message:
         "Can't Update TransType, Something was wrong or data is the same with data before udpate",
     })

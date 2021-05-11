@@ -20,8 +20,8 @@ exports.createNewWalletType = AsyncMiddleware(async (req, res, next) => {
     type: req.body.type,
   });
   if (dataResult == null) {
-    return res.status(500).json(
-      new ErrorResponse(500, {
+    return res.status(400).json(
+      new ErrorResponse(400, {
         message: "Can't create new Wallet Type, something was wrong !!",
       })
     );
@@ -45,8 +45,8 @@ exports.deleteWalletType = AsyncMiddleware(async (req, res, next) => {
         message: "Delete Wallet Type successfully !!",
       })
     );
-  return res.status(500).json(
-    new ErrorResponse(500, {
+  return res.status(400).json(
+    new ErrorResponse(400, {
       message: "Can't Delete Wallet Type, Something was wrong !!",
     })
   );
@@ -69,8 +69,8 @@ exports.updateWalletType = AsyncMiddleware(async (req, res, next) => {
       })
     );
   }
-  return res.status(500).json(
-    new ErrorResponse(500, {
+  return res.status(400).json(
+    new ErrorResponse(400, {
       message:
         "Can't Update WalletType, Something was wrong or data is the same with data before udpate",
     })
