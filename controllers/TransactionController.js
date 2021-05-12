@@ -57,7 +57,7 @@ exports.createNewTransaction = AsyncMiddleware(async (req, res, next) => {
     TransTypeIdTransType: req.body.idTransType,
     amount: req.body.amount,
     note: req.body.note,
-    date: new Date(),
+    date: new Date(req.body.date),
   });
   return res.status(200).json(
     new SuccessResponse(200, {

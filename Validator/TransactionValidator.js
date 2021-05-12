@@ -46,6 +46,7 @@ module.exports = {
           return Promise.reject("Amount must not negative");
       }),
     body("note").trim(),
+    body("date").notEmpty().withMessage("Please input date"),
   ],
   deleteTransactionValidation: [
     param("idTransaction")

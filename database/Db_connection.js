@@ -14,6 +14,7 @@ const sequelize = new Sequelize(
       acquire: parseInt(process.env.DB_POOL_ACQUIRE),
       idle: parseInt(process.env.DB_POOL_IDLE),
     },
+    timezone: process.env.TIME_ZONE,
   },
   { logging: console.log }
 );

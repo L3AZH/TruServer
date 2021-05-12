@@ -393,7 +393,8 @@
                   "value": {
                     "idWallet": "12",
                     "idTransType": "7",
-                    "amount": "30000"
+                    "amount": "30000",
+                    "date": "2021/04/18"
                   }
                 }
               }
