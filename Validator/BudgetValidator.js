@@ -36,12 +36,7 @@ module.exports = {
       .trim()
       .notEmpty()
       .withMessage("Please fill note to know what budget for ... !!"),
-    body("date")
-      .trim()
-      .notEmpty()
-      .withMessage("Please fill date")
-      .isDate()
-      .withMessage("Invalid date"),
+    body("date").trim().notEmpty().withMessage("Please fill date"),
   ],
   deleteBudgetValidation: [
     param("idBudget")
@@ -70,7 +65,7 @@ module.exports = {
   updateBudgetBodyValidation: [
     body("amount").trim().isNumeric().withMessage("Invalid amount"),
     body("note").trim(),
-    body("date").trim().isDate().withMessage("Invalid date"),
+    body("date").trim(),
   ],
   result: (req, res, next) => {
     const errors = validationResult(req);
