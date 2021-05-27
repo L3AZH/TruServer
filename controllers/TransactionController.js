@@ -5,6 +5,29 @@ const { SuccessResponse } = require("../models/SuccessResponse");
 const { ErrorResponse } = require("../models/ErrorResponse");
 const AsyncMiddleware = require("../middlewares/AsyncMiddleware");
 const Wallet = require("../database/models/Wallet");
+const Account = require("../database/models/Account");
+const TransType = require("../database/models/TransType");
+
+exports.getAllTransactionOfUser = AsyncMiddleware(async (req, res, next) => {
+  const emailUser = await Account.findByPk(req.user._email);
+  const dataResult = await sequelize.query(
+    "select idTransaction, Wallet_idWallet, email, TransType_idTransType, type, Transaction.amount, note, date " +
+      "from Wallet, Account, TransType, Transaction " +
+      "where Account.email = :emailOfUser and " +
+      "Wallet.Account_email = Account.email and " +
+      "Wallet.idWallet = Transaction.Wallet_idWallet and " +
+      "Transaction.TransType_idTransType = TransType.idTransType",
+    { type: QueryTypes.SELECT, replacements: { emailOfUser: emailUser.email } }
+  );
+  if (dataResult == null || dataResult.length == 0) {
+    return res.status(404).json(
+      new ErrorResponse(404, {
+        message: `Cant find any transaction with email: ${emailUser.email}`,
+      })
+    );
+  }
+  return res.status(200).json(new SuccessResponse(200, { result: dataResult }));
+});
 
 exports.getTransactionWithIdWallet = AsyncMiddleware(async (req, res, next) => {
   const dataResult = await sequelize.query(
@@ -54,7 +77,13 @@ exports.getTransactionWithIdWalletAndIdType = AsyncMiddleware(
 
 exports.createNewTransaction = AsyncMiddleware(async (req, res, next) => {
   const wallet = await Wallet.findByPk(req.body.idWallet);
-  wallet.amount = wallet.amount - req.body.amount;
+  const tranType = await TransType.findByPk(req.body.idTransType);
+  if (tranType.type === "Chi") {
+    wallet.amount = wallet.amount - req.body.amount;
+  }
+  if (tranType.type === "Thu") {
+    wallet.amount = wallet.amount + req.body.amount;
+  }
   if (wallet.amount > 0.0) {
     const dataResult = await Transaction.create({
       WalletIdWallet: req.body.idWallet,
@@ -95,7 +124,13 @@ exports.createNewTransaction = AsyncMiddleware(async (req, res, next) => {
 exports.deleteTransaction = AsyncMiddleware(async (req, res, next) => {
   const transaction = await Transaction.findByPk(req.params.idTransaction);
   const wallet = await Wallet.findByPk(transaction.WalletIdWallet);
-  wallet.amount = wallet.amount + transaction.amount;
+  const tranType = await TransType.findByPk(transaction.TransTypeIdTransType);
+  if (tranType === "Chi") {
+    wallet.amount = wallet.amount + transaction.amount;
+  }
+  if (tranType === "Thu") {
+    wallet.amount = wallet.amount - transaction.amount;
+  }
   const updateWalletResult = await Wallet.update(
     { amount: wallet.amount },
     { where: { idWallet: wallet.idWallet } }
@@ -130,12 +165,23 @@ exports.updateTransaction = AsyncMiddleware(async (req, res, next) => {
   //check idTransaction tồn tại hay chưa trong validation
   const dataBeforeUpdate = await Transaction.findByPk(req.params.idTransaction);
   const wallet = await Wallet.findByPk(dataBeforeUpdate.WalletIdWallet);
-  wallet.amount = wallet.amount + dataBeforeUpdate.amount;
+  const tranType = await TransType.findByPk(transaction.TransTypeIdTransType);
+  if (tranType === "Chi") {
+    wallet.amount = wallet.amount + dataBeforeUpdate.amount;
+  }
+  if (tranType === "Thu") {
+    wallet.amount = wallet.amount - dataBeforeUpdate.amount;
+  }
   if (req.body.idTransType)
     dataBeforeUpdate.TransTypeIdTransType = req.body.idTransType;
   if (req.body.amount) dataBeforeUpdate.amount = req.body.amount;
   if (req.body.note) dataBeforeUpdate.note = req.body.note;
-  wallet.amount = wallet.amount - dataBeforeUpdate.amount;
+  if (tranType === "Chi") {
+    wallet.amount = wallet.amount - dataBeforeUpdate.amount;
+  }
+  if (tranType === "Thu") {
+    wallet.amount = wallet.amount + dataBeforeUpdate.amount;
+  }
   if (wallet.amount > 0.0) {
     const updateWallet = await Wallet.update(
       { amount: wallet.amount },

@@ -4,6 +4,12 @@ const TransactionValidator = require("../Validator/TransactionValidator");
 const AuthProtection = require("../middlewares/JwtAuth");
 
 router.get(
+  "/get-all-transaction",
+  AuthProtection,
+  TransactionController.getAllTransactionOfUser
+);
+
+router.get(
   "/all-transaction/:idWallet",
   AuthProtection,
   TransactionValidator.getTransactionWithIdWalletValidation,

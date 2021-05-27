@@ -303,6 +303,27 @@
         }
       }
     },
+    "/account/wallet/transaction/get-all-transaction": {
+      "get": {
+        "tags": ["Transaction"],
+        "summary": "get all transaction of user",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
     "/account/wallet/transaction/all-transaction/{idWallet}": {
       "get": {
         "tags": ["Transaction"],
