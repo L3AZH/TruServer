@@ -3,6 +3,7 @@ const AsyncMiddleware = require("../middlewares/AsyncMiddleware");
 const { SuccessResponse } = require("../models/SuccessResponse");
 const { ErrorResponse } = require("../models/ErrorResponse");
 const bcrypt = require("bcrypt");
+const Wallet = require("../database/models/Wallet");
 
 async function hassPassword(password) {
   const salt = await bcrypt.genSalt(13);
@@ -17,6 +18,13 @@ exports.register = AsyncMiddleware(async (req, res, next) => {
     phone: req.body.phone,
     joindate: new Date(),
   });
+  for (let i = 1; i < 7; i++) {
+    await Wallet.create({
+      amount: 0,
+      AccountEmail: req.body.email,
+      WalletTypeIdWalletType: i,
+    });
+  }
   return res
     .header("Authorization", "Bearer " + dataResult.generateToken())
     .status(200)
