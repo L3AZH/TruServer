@@ -1,3 +1,4 @@
+const lodash = require("lodash");
 const Transaction = require("../database/models/Transaction");
 const sequelize = require("../database/Db_connection");
 const { QueryTypes } = require("sequelize");
@@ -7,6 +8,7 @@ const AsyncMiddleware = require("../middlewares/AsyncMiddleware");
 const Wallet = require("../database/models/Wallet");
 const Account = require("../database/models/Account");
 const TransType = require("../database/models/TransType");
+const e = require("cors");
 
 exports.getAllTransactionOfUser = AsyncMiddleware(async (req, res, next) => {
   const emailUser = await Account.findByPk(req.user._email);
@@ -77,46 +79,49 @@ exports.getTransactionWithIdWalletAndIdType = AsyncMiddleware(
 
 exports.createNewTransaction = AsyncMiddleware(async (req, res, next) => {
   const wallet = await Wallet.findByPk(req.body.idWallet);
+  const listWallet = await sequelize.query(
+    "select idWallet,amount,type " +
+      "from Wallet,WalletType " +
+      "where Wallet.WalletType_idWalletType = WalletType.idWalletType and Wallet.Account_email = :email",
+    { type: QueryTypes.SELECT, replacements: { email: req.user._email } }
+  );
   const tranType = await TransType.findByPk(req.body.idTransType);
   if (tranType.type === "Chi") {
     wallet.amount = wallet.amount - req.body.amount;
-  }
-  if (tranType.type === "Thu") {
-    wallet.amount = wallet.amount + req.body.amount;
-  }
-  if (wallet.amount > 0.0) {
-    const dataResult = await Transaction.create({
-      WalletIdWallet: req.body.idWallet,
-      TransTypeIdTransType: req.body.idTransType,
-      amount: req.body.amount,
-      note: req.body.note,
-      date: new Date(req.body.date),
-    });
-    const updateWalletResult = await Wallet.update(
-      { amount: wallet.amount },
-      { where: { idWallet: wallet.idWallet } }
-    );
-    if (updateWalletResult == 1) {
-      return res.status(200).json(
-        new SuccessResponse(200, {
-          message: "Create transaction successfully !!",
-          newObject: dataResult,
-        })
-      );
-    } else {
-      return res.status(200).json(
-        new SuccessResponse(200, {
-          message:
-            "Create transaction successfully but update amout wallet fail !!",
-          newObject: dataResult,
+    if (wallet.amount < 0) {
+      return res.status(400).json(
+        new ErrorResponse(400, {
+          message: "Cant create transaction, wallet will be negative!!",
         })
       );
     }
+    await Wallet.update(
+      { amount: wallet.amount },
+      { where: { idWallet: wallet.idWallet } }
+    );
   }
-  return res.status(400).json(
-    new SuccessResponse(400, {
-      message:
-        "Cant not create transaction because wallet amount will be negative",
+  if (tranType.type === "Thu") {
+    if (tranType.categoryName === "Luong") {
+      await editListWallet(listWallet, req.body.amount, true);
+    } else {
+      wallet.amount = wallet.amount + req.body.amount;
+      await Wallet.update(
+        { amount: wallet.amount },
+        { where: { idWallet: wallet.idWallet } }
+      );
+    }
+  }
+  const dataResult = await Transaction.create({
+    WalletIdWallet: req.body.idWallet,
+    TransTypeIdTransType: req.body.idTransType,
+    amount: req.body.amount,
+    note: req.body.note,
+    date: new Date(req.body.date),
+  });
+  return res.status(200).json(
+    new SuccessResponse(200, {
+      message: "Create transaction successfully !!",
+      newObject: dataResult,
     })
   );
 });
@@ -124,39 +129,52 @@ exports.createNewTransaction = AsyncMiddleware(async (req, res, next) => {
 exports.deleteTransaction = AsyncMiddleware(async (req, res, next) => {
   const transaction = await Transaction.findByPk(req.params.idTransaction);
   const wallet = await Wallet.findByPk(transaction.WalletIdWallet);
-  const tranType = await TransType.findByPk(transaction.TransTypeIdTransType);
-  if (tranType === "Chi") {
-    wallet.amount = wallet.amount + transaction.amount;
-  }
-  if (tranType === "Thu") {
-    wallet.amount = wallet.amount - transaction.amount;
-  }
-  const updateWalletResult = await Wallet.update(
-    { amount: wallet.amount },
-    { where: { idWallet: wallet.idWallet } }
+  const listWallet = await sequelize.query(
+    "select idWallet,amount,type " +
+      "from Wallet,WalletType " +
+      "where Wallet.WalletType_idWalletType = WalletType.idWalletType and Wallet.Account_email = :email",
+    { type: QueryTypes.SELECT, replacements: { email: req.user._email } }
   );
-  const deleteResult = await Transaction.destroy({
-    where: { idTransaction: req.params.idTransaction },
-  });
-  if (deleteResult == 1) {
-    if (updateWalletResult == 1) {
-      return res.status(200).json(
-        new SuccessResponse(200, {
-          message: "Delete Transaction successfully !!",
-        })
-      );
+  const tranType = await TransType.findByPk(transaction.TransTypeIdTransType);
+  if (tranType.type === "Chi") {
+    wallet.amount = wallet.amount + transaction.amount;
+    await Wallet.update(
+      { amount: wallet.amount },
+      { where: { idWallet: wallet.idWallet } }
+    );
+  }
+  if (tranType.type === "Thu") {
+    if (tranType.categoryName === "Luong") {
+      if (!checkListViAmKhiEditLuong(listWallet, transaction.amount, false)) {
+        await editListWallet(listWallet, transaction.amount, false);
+      } else {
+        return res.status(400).json(
+          new ErrorResponse(400, {
+            message: `Cant delete transaction, wallet will be negative!!`,
+          })
+        );
+      }
     } else {
-      return res.status(200).json(
-        new SuccessResponse(200, {
-          message:
-            "Delete Transaction successfully but update amount wallet fail !!",
-        })
+      wallet.amount = wallet.amount - transaction.amount;
+      if (wallet.amount < 0) {
+        return res.status(400).json(
+          new ErrorResponse(400, {
+            message: `Cant delete transaction, this wallet will be negative!!`,
+          })
+        );
+      }
+      await Wallet.update(
+        { amount: wallet.amount },
+        { where: { idWallet: wallet.idWallet } }
       );
     }
   }
-  return res.status(400).json(
-    new ErrorResponse(400, {
-      message: "Can't Delete Transaction, something was wrong !!!",
+  await Transaction.destroy({
+    where: { idTransaction: req.params.idTransaction },
+  });
+  return res.status(200).json(
+    new SuccessResponse(200, {
+      message: "Delete Transaction successfully !!",
     })
   );
 });
@@ -165,65 +183,254 @@ exports.updateTransaction = AsyncMiddleware(async (req, res, next) => {
   //check idTransaction tồn tại hay chưa trong validation
   const dataBeforeUpdate = await Transaction.findByPk(req.params.idTransaction);
   const wallet = await Wallet.findByPk(dataBeforeUpdate.WalletIdWallet);
-  const tranType = await TransType.findByPk(transaction.TransTypeIdTransType);
-  if (tranType === "Chi") {
+  const listWallet = await sequelize.query(
+    "select idWallet,amount,type " +
+      "from Wallet,WalletType " +
+      "where Wallet.WalletType_idWalletType = WalletType.idWalletType and Wallet.Account_email = :email",
+    { type: QueryTypes.SELECT, replacements: { email: req.user._email } }
+  );
+  const tranType = await TransType.findByPk(
+    dataBeforeUpdate.TransTypeIdTransType
+  );
+  if (tranType.type === "Chi") {
     wallet.amount = wallet.amount + dataBeforeUpdate.amount;
   }
-  if (tranType === "Thu") {
-    wallet.amount = wallet.amount - dataBeforeUpdate.amount;
+  if (tranType.type === "Thu") {
+    if (tranType.categoryName === "Luong") {
+      for (let i = 0; i < listWallet.length; i++) {
+        switch (listWallet[i].type) {
+          case "Chi tieu can thiet": {
+            listWallet[i].amount =
+              listWallet[i].amount - dataBeforeUpdate.amount * 0.55;
+            console.log(listWallet[i].amount);
+            console.log(dataBeforeUpdate.amount);
+            break;
+          }
+          case "Tiet kiem dai han": {
+            listWallet[i].amount =
+              listWallet[i].amount - dataBeforeUpdate.amount * 0.1;
+            break;
+          }
+          case "Quy giao duc": {
+            listWallet[i].amount =
+              listWallet[i].amount - dataBeforeUpdate.amount * 0.1;
+            break;
+          }
+          case "Huong thu": {
+            listWallet[i].amount =
+              listWallet[i].amount - dataBeforeUpdate.amount * 0.1;
+            break;
+          }
+          case "Tu do tai chinh": {
+            listWallet[i].amount =
+              listWallet[i].amount - dataBeforeUpdate.amount * 0.1;
+            break;
+          }
+          case "Quy tu thien": {
+            listWallet[i].amount =
+              listWallet[i].amount - dataBeforeUpdate.amount * 0.05;
+            break;
+          }
+        }
+      }
+    } else {
+      wallet.amount = wallet.amount - dataBeforeUpdate.amount;
+    }
   }
   if (req.body.idTransType)
     dataBeforeUpdate.TransTypeIdTransType = req.body.idTransType;
-  if (req.body.amount) dataBeforeUpdate.amount = req.body.amount;
+  if (req.body.amount) dataBeforeUpdate.amount = Number(req.body.amount);
   if (req.body.note) dataBeforeUpdate.note = req.body.note;
-  if (tranType === "Chi") {
+  console.log(dataBeforeUpdate.amount);
+  if (tranType.type === "Chi") {
     wallet.amount = wallet.amount - dataBeforeUpdate.amount;
-  }
-  if (tranType === "Thu") {
-    wallet.amount = wallet.amount + dataBeforeUpdate.amount;
-  }
-  if (wallet.amount > 0.0) {
-    const updateWallet = await Wallet.update(
+    if (wallet.amount < 0) {
+      return res.status(400).json(
+        new ErrorResponse(400, {
+          message: "Cant update transaction, wallet will be negative!!",
+        })
+      );
+    }
+    await Wallet.update(
       { amount: wallet.amount },
       { where: { idWallet: wallet.idWallet } }
     );
-    const updateResult = await Transaction.update(
-      {
-        TransTypeIdTransType: dataBeforeUpdate.TransTypeIdTransType,
-        amount: dataBeforeUpdate.amount,
-        note: dataBeforeUpdate.note,
-      },
-      { where: { idTransaction: dataBeforeUpdate.idTransaction } }
-    );
-    if (updateResult == 1) {
-      if (updateWallet == 1) {
-        return res.status(200).json(
-          new SuccessResponse(200, {
-            message: "Update Transaction successfully !!",
-            updateObject: dataBeforeUpdate,
-          })
-        );
+  }
+  if (tranType.type === "Thu") {
+    if (tranType.categoryName === "Luong") {
+      console.log(listWallet[0].amount);
+      console.log(dataBeforeUpdate.amount);
+      if (
+        !checkListViAmKhiEditLuong(listWallet, dataBeforeUpdate.amount, true)
+      ) {
+        await editListWallet(listWallet, dataBeforeUpdate.amount, true);
       } else {
-        return res.status(200).json(
-          new SuccessResponse(200, {
-            message:
-              "Update Transaction successfully but update amount wallet fail !!",
-            updateObject: dataBeforeUpdate,
+        return res.status(400).json(
+          new ErrorResponse(400, {
+            message: `Cant update transaction, wallet will be negative!!`,
           })
         );
       }
+    } else {
+      wallet.amount = wallet.amount + dataBeforeUpdate.amount;
+      if (wallet.amount < 0) {
+        return res.status(400).json(
+          new ErrorResponse(400, {
+            message: `Cant update transaction, this wallet will be negative!!`,
+          })
+        );
+      }
+      await Wallet.update(
+        { amount: wallet.amount },
+        { where: { idWallet: wallet.idWallet } }
+      );
     }
-    return res.status(400).json(
-      new ErrorResponse(400, {
-        message:
-          "Can't Update Transaction, something was wrong or Data is the same with Data before data update",
-      })
-    );
   }
-  return res.status(400).json(
-    new SuccessResponse(400, {
-      message:
-        "Cant not create transaction because wallet amount will be negative",
+  await Transaction.update(
+    {
+      TransTypeIdTransType: dataBeforeUpdate.TransTypeIdTransType,
+      amount: dataBeforeUpdate.amount,
+      note: dataBeforeUpdate.note,
+    },
+    { where: { idTransaction: dataBeforeUpdate.idTransaction } }
+  );
+  return res.status(200).json(
+    new SuccessResponse(200, {
+      message: "Update Transaction successfully !!",
+      updateObject: dataBeforeUpdate,
     })
   );
 });
+
+function checkListViAmKhiEditLuong(listWallet, luong, isAdd) {
+  const listWalletForCheck = lodash.cloneDeep(listWallet);
+  for (let i = 0; i < listWalletForCheck.length; i++) {
+    switch (listWalletForCheck[i].type) {
+      case "Chi tieu can thiet": {
+        if (isAdd) {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount + luong * 0.55;
+        } else {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount - luong * 0.55;
+        }
+        break;
+      }
+      case "Tiet kiem dai han": {
+        if (isAdd) {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount + luong * 0.1;
+        } else {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount - luong * 0.1;
+        }
+        break;
+      }
+      case "Quy giao duc": {
+        if (isAdd) {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount + luong * 0.1;
+        } else {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount - luong * 0.1;
+        }
+        break;
+      }
+      case "Huong thu": {
+        if (isAdd) {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount + luong * 0.1;
+        } else {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount - luong * 0.1;
+        }
+        break;
+      }
+      case "Tu do tai chinh": {
+        if (isAdd) {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount + luong * 0.1;
+        } else {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount - luong * 0.1;
+        }
+        break;
+      }
+      case "Quy tu thien": {
+        if (isAdd) {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount + luong * 0.05;
+        } else {
+          listWalletForCheck[i].amount =
+            listWalletForCheck[i].amount - luong * 0.05;
+        }
+        break;
+      }
+    }
+    if (listWalletForCheck[i].amount < 0) {
+      console.log(listWalletForCheck[i].type);
+      console.log(listWalletForCheck[i].amount);
+      return true;
+    }
+  }
+  return false;
+}
+
+async function editListWallet(listWallet, luong, isAdd) {
+  for (let i = 0; i < listWallet.length; i++) {
+    switch (listWallet[i].type) {
+      case "Chi tieu can thiet": {
+        if (isAdd) {
+          listWallet[i].amount = listWallet[i].amount + luong * 0.55;
+        } else {
+          listWallet[i].amount = listWallet[i].amount - luong * 0.55;
+        }
+        break;
+      }
+      case "Tiet kiem dai han": {
+        if (isAdd) {
+          listWallet[i].amount = listWallet[i].amount + luong * 0.1;
+        } else {
+          listWallet[i].amount = listWallet[i].amount - luong * 0.1;
+        }
+        break;
+      }
+      case "Quy giao duc": {
+        if (isAdd) {
+          listWallet[i].amount = listWallet[i].amount + luong * 0.1;
+        } else {
+          listWallet[i].amount = listWallet[i].amount - luong * 0.1;
+        }
+        break;
+      }
+      case "Huong thu": {
+        if (isAdd) {
+          listWallet[i].amount = listWallet[i].amount + luong * 0.1;
+        } else {
+          listWallet[i].amount = listWallet[i].amount - luong * 0.1;
+        }
+        break;
+      }
+      case "Tu do tai chinh": {
+        if (isAdd) {
+          listWallet[i].amount = listWallet[i].amount + luong * 0.1;
+        } else {
+          listWallet[i].amount = listWallet[i].amount - luong * 0.1;
+        }
+        break;
+      }
+      case "Quy tu thien": {
+        if (isAdd) {
+          listWallet[i].amount = listWallet[i].amount + luong * 0.05;
+        } else {
+          listWallet[i].amount = listWallet[i].amount - luong * 0.05;
+        }
+        break;
+      }
+    }
+    await Wallet.update(
+      { amount: listWallet[i].amount },
+      { where: { idWallet: listWallet[i].idWallet } }
+    );
+  }
+}
