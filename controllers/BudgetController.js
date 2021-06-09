@@ -41,7 +41,7 @@ exports.createNewBudget = AsyncMiddleware(async (req, res, next) => {
   return res.status(200).json(
     new SuccessResponse(200, {
       message: "Create Budget successfully !!",
-      newObject: dataResult,
+      newBudgetId: dataResult.idBudget,
     })
   );
 });
@@ -78,14 +78,12 @@ exports.updateBudget = AsyncMiddleware(async (req, res, next) => {
     { where: { idBudget: dataBefore.idBudget } }
   );
   if (updateResult == 1) {
-    return res
-      .status(200)
-      .json(
-        new SuccessResponse(200, {
-          message: "Update Budget successfully !!",
-          updateObejct: dataBefore,
-        })
-      );
+    return res.status(200).json(
+      new SuccessResponse(200, {
+        message: "Update Budget successfully !!",
+        updateObejct: dataBefore,
+      })
+    );
   }
   return res.status(400).json(
     new ErrorResponse(400, {
